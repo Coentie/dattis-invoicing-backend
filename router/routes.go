@@ -7,10 +7,12 @@ import (
 )
 
 func GetRoutes(r *chi.Mux) *chi.Mux {
-	r.Get("/invoices", invoices.Index)
-	r.Put("/invoices/{id}", invoices.Update)
+	r.Route("/api", func(r chi.Router) {
+		r.Get("/invoices", invoices.Index)
+		r.Put("/invoices/{id}", invoices.Update)
 
-	r.Get("/customers", customers.Index)
+		r.Get("/customers", customers.Index)
+	})
 
 	return r
 }
