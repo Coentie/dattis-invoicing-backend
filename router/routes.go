@@ -12,6 +12,7 @@ func GetRoutes(r *chi.Mux) *chi.Mux {
 		r.Get("/invoices", invoices.Index)
 		r.Post("/invoices", invoices.Create)
 		r.Put("/invoices/{id}", invoices.Update)
+		r.Get("/invoices/{id}", invoices.Show)
 
 		r.Get("/customers", customers.Index)
 
