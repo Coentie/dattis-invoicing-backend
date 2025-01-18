@@ -16,19 +16,21 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	database.DB.Find(&invoices)
 
-	data, err := json.Marshal(invoices)
+	responses.Json(w, invoices)
+}
 
-	if err != nil {
-		responses.Error(w, err)
+// Show one invoice
+func Show(w http.ResponseWriter, r *http.Request) {
+	var invoice models.Invoice
+	invoiceId := chi.URLParam(r, "invoiceId")
+	res := database.DB.Preload("Customer").Preload("InvoiceStatus").Preload("InvoiceLines").First(&invoice, invoiceId)
+
+	if res.Error != nil {
+		responses.Error(w, res.Error)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
-
-func Show(w http.ResponseWriter, r *http.Request) {
-
+	responses.Json(w, invoice)
 }
 
 // Create endpoint for invoices
@@ -54,20 +56,13 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.Marshal(invoice)
-
-	if err != nil {
-		responses.Error(w, err)
-		return
-	}
-
-	responses.Success(w, data)
+	responses.Json(w, invoice)
 }
 
 // Update updates the invoice with a status of paid.
 func Update(w http.ResponseWriter, r *http.Request) {
 	var invoice models.Invoice
-	id := chi.URLParam(r, "id")
+	id := chi.URLParam(r, "invoiceId")
 	res := database.DB.First(&invoice, id)
 
 	if res.Error != nil {
@@ -77,13 +72,5 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	invoice.Paid = true
 	database.DB.Save(&invoice)
-
-	data, err := json.Marshal(invoice)
-
-	if err != nil {
-		responses.Error(w, err)
-		return
-	}
-
-	responses.Success(w, data)
+	responses.Json(w, invoice)
 }

@@ -48,4 +48,20 @@ func Seed() {
 			{Name: "21%", Value: 21},
 		})
 	}
+
+	DB.Model(&models.InvoiceLine{}).Count(&count)
+
+	if count == 0 {
+		var invoices []models.Invoice
+		DB.Find(&invoices)
+
+		for _, invoice := range invoices {
+			DB.Create([]*models.InvoiceLine{
+				{Name: "Support uren ARA", UnitPrice: 5000, Amount: 200, InvoiceId: invoice.Id},
+				{Name: "Support uren ARA", UnitPrice: 5000, Amount: 100, InvoiceId: invoice.Id},
+				{Name: "Support uren ARA", UnitPrice: 5000, Amount: 150, InvoiceId: invoice.Id},
+				{Name: "Support uren ARA", UnitPrice: 5000, Amount: 300, InvoiceId: invoice.Id},
+			})
+		}
+	}
 }
